@@ -1,11 +1,11 @@
 import {textService} from './textService';
-import {getConnection, getRepository, Repository} from 'typeorm';
+import {createQueryBuilder, getConnection, getRepository, Repository} from 'typeorm';
 import {Message} from '../entities/message';
 import {User} from '../entities/user';
-import {MessageInfo} from '../interfaces';
+import {MessageInfo, SendedMessage} from '../interfaces';
 
 export namespace messageService{
-    export const sendMessage = async (userId: number, text: string): Promise<void> => {
+    export const sendMessage = async (userId: number, text: string): Promise<SendedMessage[] | void> => {
         const messageRepository = getConnection().getRepository(Message);
         const userRepository = getConnection().getRepository(User);
 
@@ -21,54 +21,33 @@ export namespace messageService{
             await messageRepository.save(message);
 
             console.log("Message has been saved");
+
+            const sendingMessage: SendedMessage = {
+                userId,
+                username: user.name,
+                message: text,
+                color: user.color
+            } 
+
+            return [sendingMessage];
         }
 
         return;
     };
 
-    export const getAllMessages = async (): Promise<Message[]> => {
-        const messageRepository: Repository<Message> = getConnection().getRepository(Message);
+    export const getAllMessages = async (): Promise<any> => {
+        const allMessages = await getConnection().getRepository(Message)
+            .createQueryBuilder('message')
+            .select('message.message', 'message')
+            .addSelect('user.name', 'name')
+            .addSelect('user.color', 'color')
+            .innerJoin('message.user', 'user', "message.user = user.id")
+            .limit(20)
+            .getRawMany();
 
-        const allMessages: Message[] = await messageRepository.find({
-            take: 20,
-            order:{
-                date: "DESC",
-            }
-        })
+        console.log(allMessages);
 
         return allMessages.reverse();
-    };
-
-    export const getAllUsers = async (): Promise<User[]> => {
-        const userRepository: Repository<User> = getConnection().getRepository(User);
-
-        const allUsers: User[] = await userRepository.find();
-
-        return allUsers;
-    };
-
-    export const banUser = async (banUserId: number): Promise<User | undefined> => {
-        const userRepository: Repository<User> = getConnection().getRepository(User);
-        
-        const banUser: User | undefined = await userRepository.findOne(banUserId);
-        if(banUser instanceof User){
-            banUser.ban = !banUser.ban;
-            await userRepository.save(banUser);
-        }
-
-        return banUser;
-    };
-
-    export const muteUser = async (muteUserId: number): Promise<User | undefined> =>{
-        const userRepository: Repository<User> = getConnection().getRepository(User);
-
-        const muteUser: User | undefined = await userRepository.findOne(muteUserId);
-        if(muteUser instanceof User){
-            muteUser.mute = !muteUser.mute;
-            await userRepository.save(muteUser);
-        }
-
-        return muteUser;
     };
 
     

@@ -6,7 +6,7 @@
    "password": "root",
    "database": "testorm",
    "synchronize": true,
-   "logging": false,
+   "logging": true,
    "entities": [
       "src/entities/**/*.ts"
    ]

@@ -27,7 +27,8 @@ app.post('/',jsonParser,async (req: Request, res: Response): Promise<void> =>{
 
 
 wss.on("connection",async (ws: WebSocket, req: http.IncomingMessage): Promise<void>=>{
-   webSocketController.onConnection(ws,req.url as string);
+   webSocketController.onConnection(wss,ws,req.url as string);
+
 });
 
 

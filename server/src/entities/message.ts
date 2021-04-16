@@ -1,4 +1,4 @@
-import {Entity, Column, PrimaryGeneratedColumn, ManyToOne} from 'typeorm';
+import {Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn} from 'typeorm';
 import {User} from './user';
 import {MessageInfo} from '../interfaces';
 
@@ -22,5 +22,6 @@ export class Message{
     date: Date;
 
     @ManyToOne(type => User, user => user.messages)
+    @JoinColumn({name: 'user', referencedColumnName: 'id'})
     user: User;
 }

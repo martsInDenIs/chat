@@ -1,4 +1,5 @@
 import {User} from './entities/user';
+import {Message} from './entities/message';
 
 export interface LoginInfo{
     name: string;
@@ -20,9 +21,9 @@ export interface TokenInfo{
     mute: boolean;
 }
 
-export interface QueryInfo{
+export interface QueryObj{
     purpose: string;
-    payload: any;
+    payload?: any;
 
 }
 
@@ -31,3 +32,20 @@ export interface MessageInfo{
     date: Date;
     user: User;
 }
+
+export interface SendedMessage{
+    username: string;
+    message: string;
+    color: string;
+    userId: number;
+}
+
+export interface PrimaryAnswerObject{
+    purpose: string,
+    messages: Message[],
+    isMute: Boolean,
+    usersOnlin: string[],
+    allUsers: User[],
+    name: string,
+}
+

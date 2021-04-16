@@ -1,4 +1,4 @@
-import {Entity, Column, PrimaryGeneratedColumn, OneToOne, OneToMany} from "typeorm";
+import {Entity, Column, PrimaryGeneratedColumn, OneToOne, OneToMany, JoinColumn} from "typeorm";
 import {UserInfo} from '../interfaces';
 import {Message} from "./message";
 
@@ -39,6 +39,7 @@ export class User{
     @OneToMany(type=>Message, message => message.user,{
         cascade: true,
     })
+    @JoinColumn({name: 'id', referencedColumnName: "user"})
     messages: Message[];
     
 };
